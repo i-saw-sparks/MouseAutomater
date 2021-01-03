@@ -11,7 +11,7 @@
 
 class InputMsg {
 public:
-    enum Type {MOVE, CLICK, SELECT, COPY, PASTE, WAIT};
+    enum Type {NULLACT, MOVE, CLICK, SELECT, COPY, PASTE, WAIT};
 
     InputMsg(int msgId, Type messageType);
     InputMsg(int msgId, Type messageType, std::vector<long>&);

@@ -5,10 +5,11 @@
 int main(int argc, char *argv[]) {
     InpRepl repl;
 
-    if(argc == 1){
-        repl.runRepl("test.txt");
+    if(argc >= 2){
+        repl.runRepl(argv[1]);
+    }else{
+        std::cout<<"Specify the script route";
     }
-
 
     return 0;
 }

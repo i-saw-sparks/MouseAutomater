@@ -17,7 +17,7 @@ public:
 
     void runRepl(std::string fileName);
     void readInput(std::string);
-    std::string getLastInput();
+    void executeAction(InputMsg);
 
 private:
     std::string input;

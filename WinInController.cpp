@@ -21,13 +21,13 @@ void WinInController::moveMouse(int xPixCoord, int yPixCoord) {
 }
 
 void WinInController::sendLeftClick() {
-    this->sendLeftClickUp();
     this->sendLeftClickDown();
+    this->sendLeftClickUp();
 }
 
 void WinInController::sendRightClick() {
-    this->sendRightClickUp();
     this->sendRightClickDown();
+    this->sendRightClickUp();
 }
 
 void WinInController::sendCopyCmd() {
@@ -110,4 +110,9 @@ void WinInController::sendRightClickDown() {
     Input.type      = INPUT_MOUSE;
     Input.mi.dwFlags  = MOUSEEVENTF_RIGHTDOWN;
     ::SendInput(1,&Input,sizeof(INPUT));
+}
+
+void WinInController::wait(long sec) {
+    std::chrono::seconds dura( sec);
+    std::this_thread::sleep_for( dura );
 }

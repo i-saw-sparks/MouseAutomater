@@ -20,6 +20,7 @@ public:
     void sendCopyCmd();
     void sendPasteCmd();
     void selectChars(int charNum);
+    void wait(long sec);
 
 private:
     double fScreenWidth;
