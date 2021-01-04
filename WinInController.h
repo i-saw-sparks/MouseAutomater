@@ -14,21 +14,25 @@ class WinInController {
 public:
     WinInController();
 
-    void moveMouse(int xPixCoord, int yPixCoord);
-    void sendLeftClick();
-    void sendRightClick();
-    void sendCopyCmd();
-    void sendPasteCmd();
-    void selectChars(int charNum);
-    void wait(long sec);
+    void moveMouse(int xPixCoord, int yPixCoord) const;
+    void sendLeftClick() const;
+    void sendRightClick() const;
+    void sendCopyCmd() const;
+    void sendPasteCmd() const;
+    void selectChars(int charNum) const;
+    void wait(int sec) const;
+    void sendPasteCmdW() const;
+    void sendCopyCmdW() const;
+    void setWTime(int time);
 
 private:
+    int waitTime;
     double fScreenWidth;
     double fScreenHeight;
-    void sendLeftClickUp();
-    void sendLeftClickDown();
-    void sendRightClickUp();
-    void sendRightClickDown();
+    void sendLeftClickUp() const;
+    void sendLeftClickDown() const;
+    void sendRightClickUp() const;
+    void sendRightClickDown() const;
 };
 
 

@@ -11,16 +11,16 @@
 
 class InputMsg {
 public:
-    enum Type {NULLACT, MOVE, CLICK, SELECT, COPY, PASTE, WAIT};
+    enum Type {NULLACT, MOVE, CLICK, SELECT, COPY, PASTE, WAIT, COPYW, PASTEW, WTIME};
 
     InputMsg(int msgId, Type messageType);
-    InputMsg(int msgId, Type messageType, std::vector<long>&);
+    InputMsg(int msgId, Type messageType, std::vector<double>&);
 
     void addParam(long);
 
     int getMsgId() const;
     Type getMessageType() const;
-    std::vector<long> getParamsL() const;
+    std::vector<double> getParamsL() const;
 
     static Type parseStrToType(std::string);
 
@@ -29,7 +29,7 @@ public:
 private:
     int msgId;
     Type messageType;
-    std::vector<long> params;
+    std::vector<double> params;
     static std::unordered_map <std::string, Type> actionMap;
 };
 

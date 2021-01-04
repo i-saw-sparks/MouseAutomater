@@ -10,13 +10,16 @@ std::unordered_map <std::string, InputMsg::Type> InputMsg::actionMap ={
         {"SELECT", InputMsg::Type::SELECT},
         {"COPY", InputMsg::Type::COPY},
         {"PASTE", InputMsg::Type::PASTE},
-        {"WAIT", InputMsg::Type::WAIT}
+        {"WAIT", InputMsg::Type::WAIT},
+        {"COPYW", InputMsg::Type::COPYW},
+        {"PASTEW", InputMsg::Type::PASTEW},
+        {"WTIME", InputMsg::Type::WTIME}
 };
 
 
 InputMsg::InputMsg(int msgId, InputMsg::Type messageType):msgId(msgId), messageType(messageType) {}
 
-InputMsg::InputMsg(int msgId, InputMsg::Type messageType, std::vector<long> &params):msgId(msgId), messageType(messageType), params(params){}
+InputMsg::InputMsg(int msgId, InputMsg::Type messageType, std::vector<double> &params):msgId(msgId), messageType(messageType), params(params){}
 
 void InputMsg::addParam(long newParam) {
     params.push_back(newParam);
@@ -30,7 +33,7 @@ int InputMsg::getMsgId() const{
     return msgId;
 }
 
-std::vector<long> InputMsg::getParamsL() const {
+std::vector<double> InputMsg::getParamsL() const {
     return params;
 }
 

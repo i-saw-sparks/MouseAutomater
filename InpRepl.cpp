@@ -18,7 +18,7 @@ void InpRepl::runRepl(std::string fileName) {
 void InpRepl::readInput(std::string fileName) {
     std::ifstream infile(fileName, std::ifstream::in);
     std::string line, action;
-    std::vector<long> params;
+    std::vector<double> params;
 
     if(infile.is_open()){
         int lineId = 0;
@@ -31,19 +31,21 @@ void InpRepl::readInput(std::string fileName) {
                 std::string paramSub = line.substr(spPos+1, line.size());
 
                 int paramsPos = paramSub.find(',');
-                if(paramsPos != -1){
-                    params.push_back(stol(paramSub.substr(0, paramsPos)));
-                    params.push_back(stol(paramSub.substr(paramsPos+1, paramSub.size())));
-                }else{
-                    params.push_back(stol(paramSub));
+                try {
+                    if (paramsPos != -1) {
+                        params.push_back(stof(paramSub.substr(0, paramsPos)));
+                        params.push_back(stof(paramSub.substr(paramsPos + 1, paramSub.size())));
+                    } else {
+                        params.push_back(stof(paramSub));
+                    }
+                } catch (const std::invalid_argument &e) {
+                    std::cout<<"ERRx08 The parameters in line " << lineId +1 << " must be numbers"<<std::endl;
                 }
             }else{
                 action = line;
             }
 
             inpMessQ.push_back(InputMsg(lineId+1,InputMsg::parseStrToType(action), params));
-
-            std::cout<<inpMessQ[lineId]<<std::endl;
 
             lineId++;
         }
@@ -105,9 +107,33 @@ void InpRepl::executeAction(InputMsg cmd) {
 
         case InputMsg::Type::WAIT:
             if(cmd.getParamsL().size() == 1){
-                winIn.wait(cmd.getParamsL()[0]);
+                winIn.wait(cmd.getParamsL()[0]*1000);
             }else{
                 std::cout<<"ERRx06: in line " << cmd.getMsgId() << " action WAIT takes 1 parameter"<<std::endl;
+            }
+            break;
+
+        case InputMsg::Type::PASTEW:
+            if(cmd.getParamsL().size() == 0){
+                winIn.sendPasteCmdW();
+            }else{
+                std::cout<<"ERRx08: in line " << cmd.getMsgId() << " action PASTEW does not take parameters"<<std::endl;
+            }
+            break;
+
+        case InputMsg::Type::COPYW:
+            if(cmd.getParamsL().size() == 0){
+                winIn.sendCopyCmdW();
+            }else{
+                std::cout<<"ERRx08: in line " << cmd.getMsgId() << " action COPYW does not take parameters"<<std::endl;
+            }
+            break;
+
+        case InputMsg::Type::WTIME:
+            if(cmd.getParamsL().size() == 1){
+                winIn.setWTime(cmd.getParamsL()[0]*1000);
+            }else{
+                std::cout<<"ERRx06: in line " << cmd.getMsgId() << " action WTIME takes 1 parameter"<<std::endl;
             }
             break;
 

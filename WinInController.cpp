@@ -7,9 +7,14 @@
 WinInController::WinInController() {
     fScreenWidth = ::GetSystemMetrics(SM_CXSCREEN) - 1;
     fScreenHeight = ::GetSystemMetrics(SM_CYSCREEN) - 1;
+    waitTime = 500;
 }
 
-void WinInController::moveMouse(int xPixCoord, int yPixCoord) {
+void WinInController::setWTime(int time) {
+    waitTime = time;
+}
+
+void WinInController::moveMouse(int xPixCoord, int yPixCoord) const{
     double fx = xPixCoord * (65535.0f / fScreenWidth);
     double fy = yPixCoord * (65535.0f / fScreenHeight);
     INPUT Input = {0};
@@ -20,17 +25,17 @@ void WinInController::moveMouse(int xPixCoord, int yPixCoord) {
     ::SendInput(1, &Input, sizeof(INPUT));
 }
 
-void WinInController::sendLeftClick() {
+void WinInController::sendLeftClick() const{
     this->sendLeftClickDown();
     this->sendLeftClickUp();
 }
 
-void WinInController::sendRightClick() {
+void WinInController::sendRightClick()const {
     this->sendRightClickDown();
     this->sendRightClickUp();
 }
 
-void WinInController::sendCopyCmd() {
+void WinInController::sendCopyCmd() const{
     INPUT inputs[4];
     ZeroMemory(inputs, sizeof(inputs));
 
@@ -51,7 +56,7 @@ void WinInController::sendCopyCmd() {
     SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));
 }
 
-void WinInController::sendPasteCmd() {
+void WinInController::sendPasteCmd() const{
     INPUT inputs[4];
     ZeroMemory(inputs, sizeof(inputs));
 
@@ -72,7 +77,7 @@ void WinInController::sendPasteCmd() {
     SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));
 }
 
-void WinInController::selectChars(int charNum) {
+void WinInController::selectChars(int charNum) const{
     POINT p;
 
     if (GetCursorPos(&p)) {
@@ -84,35 +89,45 @@ void WinInController::selectChars(int charNum) {
     }
 }
 
-void WinInController::sendLeftClickUp() {
+void WinInController::sendLeftClickUp() const{
     INPUT    Input={0};
     Input.type      = INPUT_MOUSE;
     Input.mi.dwFlags  = MOUSEEVENTF_LEFTUP;
     ::SendInput(1,&Input,sizeof(INPUT));
 }
 
-void WinInController::sendLeftClickDown() {
+void WinInController::sendLeftClickDown()const {
     INPUT    Input={0};
     Input.type      = INPUT_MOUSE;
     Input.mi.dwFlags  = MOUSEEVENTF_LEFTDOWN;
     ::SendInput(1,&Input,sizeof(INPUT));
 }
 
-void WinInController::sendRightClickUp() {
+void WinInController::sendRightClickUp()const {
     INPUT    Input={0};
     Input.type      = INPUT_MOUSE;
     Input.mi.dwFlags  = MOUSEEVENTF_RIGHTUP;
     ::SendInput(1,&Input,sizeof(INPUT));
 }
 
-void WinInController::sendRightClickDown() {
+void WinInController::sendRightClickDown() const{
     INPUT    Input={0};
     Input.type      = INPUT_MOUSE;
     Input.mi.dwFlags  = MOUSEEVENTF_RIGHTDOWN;
     ::SendInput(1,&Input,sizeof(INPUT));
 }
 
-void WinInController::wait(long sec) {
-    std::chrono::seconds dura( sec);
+void WinInController::wait(int sec) const{
+    std::chrono::milliseconds dura(sec);
     std::this_thread::sleep_for( dura );
+}
+
+void WinInController::sendPasteCmdW() const{
+    wait(waitTime);
+    sendPasteCmd();
+}
+
+void WinInController::sendCopyCmdW() const{
+    wait(waitTime);
+    sendCopyCmd();
 }
