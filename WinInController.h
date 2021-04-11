@@ -24,6 +24,7 @@ public:
     void sendPasteCmdW() const;
     void sendCopyCmdW() const;
     void setWTime(int time);
+    void writeStringKb(std::string &) const;
 
 private:
     int waitTime;
@@ -33,6 +34,8 @@ private:
     void sendLeftClickDown() const;
     void sendRightClickUp() const;
     void sendRightClickDown() const;
+    void writeASCIIChar(char) const;
+    void sendKeyCmd(int) const;
 };
 
 

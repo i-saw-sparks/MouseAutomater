@@ -131,3 +131,24 @@ void WinInController::sendCopyCmdW() const{
     wait(waitTime);
     sendCopyCmd();
 }
+
+void WinInController::writeASCIIChar(char toWriteChar) const {
+    INPUT inputs[2];
+    ZeroMemory(inputs, sizeof(inputs));
+    HKL currentKBL = GetKeyboardLayout(0);
+
+    inputs[0].type = INPUT_KEYBOARD;
+    inputs[0].ki.wVk = VkKeyScanExA(toWriteChar, currentKBL);
+
+    inputs[1].type = INPUT_KEYBOARD;
+    inputs[1].ki.wVk = VkKeyScanExA(toWriteChar, currentKBL);
+    inputs[1].ki.dwFlags = KEYEVENTF_KEYUP;
+
+    SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));
+}
+
+void WinInController::writeStringKb(std::string &toWriteStr) const{
+    writeASCIIChar('l');
+}
+
+

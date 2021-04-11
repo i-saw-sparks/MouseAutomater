@@ -6,6 +6,8 @@
 
 void InpRepl::runRepl(std::string fileName) {
     readInput(fileName);
+    //test code
+    winIn.writeStringKb((std::string &) " ");
     int totalActs = inpMessQ.size(), executed = 0;
     std::cout<<"Progress: 0%";
     for(auto &n : inpMessQ){
