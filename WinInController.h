@@ -25,6 +25,7 @@ public:
     void sendCopyCmdW() const;
     void setWTime(int time);
     void writeStringKb(std::string &) const;
+    void writeNewLineKb() const;
 
 private:
     int waitTime;

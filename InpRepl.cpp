@@ -6,8 +6,7 @@
 
 void InpRepl::runRepl(std::string fileName) {
     readInput(fileName);
-    //test code
-    winIn.writeStringKb((std::string &) " ");
+
     int totalActs = inpMessQ.size(), executed = 0;
     std::cout<<"Progress: 0%";
     for(auto &n : inpMessQ){
@@ -20,7 +19,7 @@ void InpRepl::runRepl(std::string fileName) {
 void InpRepl::readInput(std::string fileName) {
     std::ifstream infile(fileName, std::ifstream::in);
     std::string line, action;
-    std::vector<double> params;
+    std::vector<std::string> params;
 
     if(infile.is_open()){
         int lineId = 0;
@@ -34,11 +33,11 @@ void InpRepl::readInput(std::string fileName) {
 
                 int paramsPos = paramSub.find(',');
                 try {
-                    if (paramsPos != -1) {
-                        params.push_back(stof(paramSub.substr(0, paramsPos)));
-                        params.push_back(stof(paramSub.substr(paramsPos + 1, paramSub.size())));
+                    if (paramsPos != -1 && paramSub[0] != '\"') {
+                        params.push_back(paramSub.substr(0, paramsPos));
+                        params.push_back(paramSub.substr(paramsPos + 1, paramSub.size()));
                     } else {
-                        params.push_back(stof(paramSub));
+                        params.push_back(paramSub);
                     }
                 } catch (const std::invalid_argument &e) {
                     std::cout<<"ERRx08 The parameters in line " << lineId +1 << " must be numbers"<<std::endl;
@@ -69,7 +68,7 @@ void InpRepl::executeAction(InputMsg cmd) {
     switch (cmd.getMessageType()){
         case InputMsg::Type::MOVE:
             if(cmd.getParamsL().size() == 2){
-                winIn.moveMouse(cmd.getParamsL()[0], cmd.getParamsL()[1]);
+                winIn.moveMouse(std::stoi(cmd.getParamsL()[0]), std::stoi(cmd.getParamsL()[1]));
             }else{
                 std::cout<<"ERRx02: in line " << cmd.getMsgId() << " action MOVE takes 2 parameters"<<std::endl;
             }
@@ -101,7 +100,7 @@ void InpRepl::executeAction(InputMsg cmd) {
 
         case InputMsg::Type::SELECT:
             if(cmd.getParamsL().size() == 1){
-                winIn.selectChars(cmd.getParamsL()[0]);
+                winIn.selectChars(std::stoi(cmd.getParamsL()[0]));
             }else{
                 std::cout<<"ERRx06: in line " << cmd.getMsgId() << " action SELECT takes 1 parameter"<<std::endl;
             }
@@ -109,7 +108,7 @@ void InpRepl::executeAction(InputMsg cmd) {
 
         case InputMsg::Type::WAIT:
             if(cmd.getParamsL().size() == 1){
-                winIn.wait(cmd.getParamsL()[0]*1000);
+                winIn.wait(std::stoi(cmd.getParamsL()[0])*1000);
             }else{
                 std::cout<<"ERRx06: in line " << cmd.getMsgId() << " action WAIT takes 1 parameter"<<std::endl;
             }
@@ -133,11 +132,26 @@ void InpRepl::executeAction(InputMsg cmd) {
 
         case InputMsg::Type::WTIME:
             if(cmd.getParamsL().size() == 1){
-                winIn.setWTime(cmd.getParamsL()[0]*1000);
+                winIn.setWTime(std::stoi(cmd.getParamsL()[0])*1000);
             }else{
                 std::cout<<"ERRx06: in line " << cmd.getMsgId() << " action WTIME takes 1 parameter"<<std::endl;
             }
             break;
+
+        case InputMsg::Type::WRITE:
+            if(cmd.getParamsL().size() == 1){
+                winIn.writeStringKb(cmd.getParamsL()[0]);
+            }else{
+                std::cout<<"ERRx06: in line " << cmd.getMsgId() << " action WRITE takes 1 parameter"<<std::endl;
+            }
+            break;
+
+        case InputMsg::Type::WRITE_NEWLINE:
+            if(cmd.getParamsL().size() == 0){
+                winIn.writeNewLineKb();
+            }else{
+                std::cout<<"ERRx08: in line " << cmd.getMsgId() << " action WRITE_NEWLINE does not take parameters"<<std::endl;
+            }
 
         case InputMsg::Type::NULLACT:
             std::cout<<"ERRx07: in line " << cmd.getMsgId() << " action was not identified. Maybe the action have a typo or the line is empty"<<std::endl;

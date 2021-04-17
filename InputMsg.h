@@ -7,20 +7,21 @@
 #include <vector>
 #include <unordered_map>
 #include <ostream>
+#include <string>
 
 
 class InputMsg {
 public:
-    enum Type {NULLACT, MOVE, CLICK, SELECT, COPY, PASTE, WAIT, COPYW, PASTEW, WTIME};
+    enum Type {NULLACT, MOVE, CLICK, SELECT, COPY, PASTE, WAIT, COPYW, PASTEW, WTIME, WRITE, WRITE_NEWLINE};
 
     InputMsg(int msgId, Type messageType);
-    InputMsg(int msgId, Type messageType, std::vector<double>&);
+    InputMsg(int msgId, Type messageType, std::vector<std::string>&);
 
-    void addParam(long);
+    void addParam(std::string &);
 
     int getMsgId() const;
     Type getMessageType() const;
-    std::vector<double> getParamsL() const;
+    std::vector<std::string> getParamsL() const;
 
     static Type parseStrToType(std::string);
 
@@ -29,7 +30,7 @@ public:
 private:
     int msgId;
     Type messageType;
-    std::vector<double> params;
+    std::vector<std::string> params;
     static std::unordered_map <std::string, Type> actionMap;
 };
 

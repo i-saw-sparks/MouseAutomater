@@ -14,7 +14,7 @@ void WinInController::setWTime(int time) {
     waitTime = time;
 }
 
-void WinInController::moveMouse(int xPixCoord, int yPixCoord) const{
+void WinInController::moveMouse(int xPixCoord, int yPixCoord) const {
     double fx = xPixCoord * (65535.0f / fScreenWidth);
     double fy = yPixCoord * (65535.0f / fScreenHeight);
     INPUT Input = {0};
@@ -25,17 +25,17 @@ void WinInController::moveMouse(int xPixCoord, int yPixCoord) const{
     ::SendInput(1, &Input, sizeof(INPUT));
 }
 
-void WinInController::sendLeftClick() const{
+void WinInController::sendLeftClick() const {
     this->sendLeftClickDown();
     this->sendLeftClickUp();
 }
 
-void WinInController::sendRightClick()const {
+void WinInController::sendRightClick() const {
     this->sendRightClickDown();
     this->sendRightClickUp();
 }
 
-void WinInController::sendCopyCmd() const{
+void WinInController::sendCopyCmd() const {
     INPUT inputs[4];
     ZeroMemory(inputs, sizeof(inputs));
 
@@ -56,7 +56,7 @@ void WinInController::sendCopyCmd() const{
     SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));
 }
 
-void WinInController::sendPasteCmd() const{
+void WinInController::sendPasteCmd() const {
     INPUT inputs[4];
     ZeroMemory(inputs, sizeof(inputs));
 
@@ -77,57 +77,57 @@ void WinInController::sendPasteCmd() const{
     SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));
 }
 
-void WinInController::selectChars(int charNum) const{
+void WinInController::selectChars(int charNum) const {
     POINT p;
 
     if (GetCursorPos(&p)) {
         this->sendLeftClickDown();
-        for(long i=p.x; i<p.x+charNum; ++i) {
+        for (long i = p.x; i < p.x + charNum; ++i) {
             this->moveMouse(i, p.y);
         }
         this->sendLeftClickUp();
     }
 }
 
-void WinInController::sendLeftClickUp() const{
-    INPUT    Input={0};
-    Input.type      = INPUT_MOUSE;
-    Input.mi.dwFlags  = MOUSEEVENTF_LEFTUP;
-    ::SendInput(1,&Input,sizeof(INPUT));
+void WinInController::sendLeftClickUp() const {
+    INPUT Input = {0};
+    Input.type = INPUT_MOUSE;
+    Input.mi.dwFlags = MOUSEEVENTF_LEFTUP;
+    ::SendInput(1, &Input, sizeof(INPUT));
 }
 
-void WinInController::sendLeftClickDown()const {
-    INPUT    Input={0};
-    Input.type      = INPUT_MOUSE;
-    Input.mi.dwFlags  = MOUSEEVENTF_LEFTDOWN;
-    ::SendInput(1,&Input,sizeof(INPUT));
+void WinInController::sendLeftClickDown() const {
+    INPUT Input = {0};
+    Input.type = INPUT_MOUSE;
+    Input.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
+    ::SendInput(1, &Input, sizeof(INPUT));
 }
 
-void WinInController::sendRightClickUp()const {
-    INPUT    Input={0};
-    Input.type      = INPUT_MOUSE;
-    Input.mi.dwFlags  = MOUSEEVENTF_RIGHTUP;
-    ::SendInput(1,&Input,sizeof(INPUT));
+void WinInController::sendRightClickUp() const {
+    INPUT Input = {0};
+    Input.type = INPUT_MOUSE;
+    Input.mi.dwFlags = MOUSEEVENTF_RIGHTUP;
+    ::SendInput(1, &Input, sizeof(INPUT));
 }
 
-void WinInController::sendRightClickDown() const{
-    INPUT    Input={0};
-    Input.type      = INPUT_MOUSE;
-    Input.mi.dwFlags  = MOUSEEVENTF_RIGHTDOWN;
-    ::SendInput(1,&Input,sizeof(INPUT));
+void WinInController::sendRightClickDown() const {
+    INPUT Input = {0};
+    Input.type = INPUT_MOUSE;
+    Input.mi.dwFlags = MOUSEEVENTF_RIGHTDOWN;
+    ::SendInput(1, &Input, sizeof(INPUT));
 }
 
-void WinInController::wait(int sec) const{
+void WinInController::wait(int sec) const {
     std::chrono::milliseconds dura(sec);
-    std::this_thread::sleep_for( dura );
+    std::this_thread::sleep_for(dura);
 }
 
-void WinInController::sendPasteCmdW() const{
+void WinInController::sendPasteCmdW() const {
     wait(waitTime);
     sendPasteCmd();
 }
 
-void WinInController::sendCopyCmdW() const{
+void WinInController::sendCopyCmdW() const {
     wait(waitTime);
     sendCopyCmd();
 }
@@ -136,19 +136,59 @@ void WinInController::writeASCIIChar(char toWriteChar) const {
     INPUT inputs[2];
     ZeroMemory(inputs, sizeof(inputs));
     HKL currentKBL = GetKeyboardLayout(0);
+    SHORT vk = VkKeyScanExA(toWriteChar, currentKBL);
+
+    if (vk & 0x100) {
+        INPUT Input = {0};
+        Input.type = INPUT_KEYBOARD;
+        Input.ki.wVk = VK_SHIFT;
+        ::SendInput(1, &Input, sizeof(INPUT));
+    }
+
+    if (vk & 0x200) {
+        INPUT Input = {0};
+        Input.type = INPUT_KEYBOARD;
+        Input.ki.wVk = VK_CONTROL;
+        ::SendInput(1, &Input, sizeof(INPUT));
+    }
 
     inputs[0].type = INPUT_KEYBOARD;
-    inputs[0].ki.wVk = VkKeyScanExA(toWriteChar, currentKBL);
+    inputs[0].ki.wVk = vk;
+    inputs[0].ki.wScan = (short) toWriteChar;
 
     inputs[1].type = INPUT_KEYBOARD;
-    inputs[1].ki.wVk = VkKeyScanExA(toWriteChar, currentKBL);
+    inputs[1].ki.wVk = vk;
     inputs[1].ki.dwFlags = KEYEVENTF_KEYUP;
 
     SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));
+
+    if (vk & 0x100) {
+        INPUT Input = {0};
+        Input.type = INPUT_KEYBOARD;
+        Input.ki.wVk = VK_SHIFT;
+        Input.ki.dwFlags = KEYEVENTF_KEYUP;
+        ::SendInput(1, &Input, sizeof(INPUT));
+    }
+
+    if (vk & 0x200) {
+        INPUT Input = {0};
+        Input.type = INPUT_KEYBOARD;
+        Input.ki.wVk = VK_CONTROL;
+        Input.ki.dwFlags = KEYEVENTF_KEYUP;
+        ::SendInput(1, &Input, sizeof(INPUT));
+    }
 }
 
-void WinInController::writeStringKb(std::string &toWriteStr) const{
-    writeASCIIChar('l');
+void WinInController::writeStringKb(std::string &toWriteStr) const {
+    for (char a : toWriteStr) {
+        if (a != '"') {
+            writeASCIIChar(a);
+        }
+    }
+}
+
+void WinInController::writeNewLineKb() const {
+    writeASCIIChar('\n');
 }
 
 
